@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>   
-    <a href="https://github.com/rimsha527/Portfolio/blob/main/index.css" rel="stylesheet>
+
         <style>
         :root {
       --primary-color: #1e3a8a; /* Deep Blue */
@@ -846,5 +846,145 @@
   <footer>
     <p>&copy; 2025 Rimsha Sumera. All rights reserved.</p>
   </footer>
+         <script>
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Dynamic gradient based on mouse position
+    const hero = document.querySelector('.hero');
+    hero.addEventListener('mousemove', (e) => {
+      const rect = hero.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      hero.style.backgroundPosition = `${x * 100}% ${y * 100}%`;
+    });
+
+    // 3D tilt effect for hero content
+    const heroContent = document.querySelector('.hero-content');
+    hero.addEventListener('mousemove', (e) => {
+      const rect = hero.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      heroContent.style.transform = `perspective(1000px) rotateX(${y * 10}deg) rotateY(${x * -10}deg)`;
+    });
+    hero.addEventListener('mouseleave', () => {
+      heroContent.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+    });
+
+    // Particle effect with mouse interaction
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particlesArray = [];
+    const numberOfParticles = 50;
+    let mouse = { x: null, y: null };
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 5 + 1;
+        this.speedX = Math.random() * 2 - 1;
+        this.speedY = Math.random() * 2 - 1;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.size > 0.2) this.size -= 0.05;
+
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+
+        // Mouse attraction
+        if (mouse.x && mouse.y) {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 100) {
+            this.speedX += dx * 0.01;
+            this.speedY += dy * 0.01;
+          }
+        }
+      }
+
+      draw() {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+        if (particlesArray[i].size <= 0.2) {
+          particlesArray.splice(i, 1);
+          particlesArray.push(new Particle());
+          i--;
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+
+    initParticles();
+    animateParticles();
+
+    hero.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    hero.addEventListener('mouseleave', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // Debug broken links
+    document.querySelectorAll('.live-demo, .github-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        fetch(link.href, { method: 'HEAD' })
+          .then(response => {
+            if (!response.ok) {
+              console.warn(`Link broken: ${link.href}`);
+              e.preventDefault();
+              link.classList.add('broken');
+              link.title = 'This link appears to be broken. Please check the URL.';
+            }
+          })
+          .catch(() => {
+            console.warn(`Link broken: ${link.href}`);
+            e.preventDefault();
+            link.classList.add('broken');
+            link.title = 'This link appears to be broken. Please check the URL.';
+          });
+      });
+    });
+  </script>
+
 </body>
 </html>
